@@ -13,7 +13,7 @@
     <groupId>de.ars.schulung.samples.services.todo</groupId>
     <artifactId>todos-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Todos Microservice</name>
+    <name>Todos Spring Sample</name>
 
     <properties>
         <java.version>1.8</java.version>

@@ -6,6 +6,7 @@
     <artifactId>todo-sample-javaee</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
+    <name>Todos Java EE Sample</name>
 
     <properties>
         <!-- Standard-Properties durch Maven Plugins -->
