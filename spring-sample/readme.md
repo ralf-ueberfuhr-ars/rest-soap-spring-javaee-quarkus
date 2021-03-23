@@ -2,6 +2,10 @@
 
 Dieses Sample enthält einen REST-Service mit Spring Boot. Desweiteren auch Microprofile-Funktionalitäten. Laufzeitumgebung ist ein mit der Anwendung verpackter Tomcat.
 
+## Neues Projekt anlegen
+
+https://start.spring.io/
+
 ## Starten in der Entwicklungsumgebung
 
 Starten im Developer-Modus:
