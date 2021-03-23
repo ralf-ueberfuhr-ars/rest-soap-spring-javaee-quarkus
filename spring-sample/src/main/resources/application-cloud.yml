@@ -1,0 +1,14 @@
+# Cloud-spezifische Einstellungen
+logging:
+  level:
+    root: WARN
+    org.springframework.web: INFO
+    de.ars.schulung: INFO
+
+spring:
+  devtools:
+    add-properties: false
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
