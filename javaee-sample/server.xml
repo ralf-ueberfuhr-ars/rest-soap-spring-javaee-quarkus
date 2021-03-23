@@ -1,0 +1,46 @@
+<server description="huk-vorlage-20.0.0.10">
+    <featureManager>
+        <feature>localConnector-1.0</feature>
+        <!-- Boundary Layer -->
+	    <feature>jaxrs-2.1</feature>
+		<feature>jaxws-2.2</feature>
+        <!-- Business Logic Layer -->
+		<feature>cdi-2.0</feature>
+    	<feature>beanValidation-2.0</feature>
+        <!-- Persistence Layer -->
+		<feature>jpa-2.2</feature>
+		<!-- MicroProfile -->
+		<feature>mpHealth-2.2</feature>
+		<feature>mpOpenAPI-1.1</feature>
+	</featureManager>
+
+    <applicationManager  autoExpand="true"/>
+
+    <httpEndpoint id="defaultHttpEndpoint"
+    	host="*"
+    	httpPort="9080"
+    	httpsPort="-1"
+	/>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - JPA - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- Datasource -->
+	<library id="H2JDBCLib">
+		<fileset dir="${shared.resource.dir}" includes="h2*.jar" />
+	</library>
+
+	<dataSource id="h2Test" jndiName="jdbc/TodoDB">
+		<jdbcDriver
+			javax.sql.ConnectionPoolDataSource="org.h2.jdbcx.JdbcDataSource"
+			javax.sql.DataSource="org.h2.jdbcx.JdbcDataSource"
+			javax.sql.XADataSource="org.h2.jdbcx.JdbcDataSource"
+			libraryRef="H2JDBCLib" />
+		<!-- h2-Verzeichnis im Liberty -->
+		<properties 
+			URL="jdbc:h2:./.db/todos;DB_CLOSE_DELAY=-1;MODE=DB2;AUTO_SERVER=TRUE" />
+		<properties user="sa" />
+	</dataSource>
+	
+	<!-- Define App root -->
+	<webApplication id="appRoot" contextRoot="/todos-app" location="todos-app.war" />
+
+</server>

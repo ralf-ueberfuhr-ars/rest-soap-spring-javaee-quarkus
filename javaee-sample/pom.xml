@@ -1,0 +1,220 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.ars.schulung.javaee</groupId>
+    <artifactId>todo-sample-javaee</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <properties>
+        <!-- Standard-Properties durch Maven Plugins -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- Java EE version -->
+        <version.javaee-spec>8.0</version.javaee-spec>
+		<version.jersey>2.32</version.jersey> <!-- for tests -->
+        <!-- JUnit Version -->
+        <version.junit>5.7.0</version.junit>
+        <version.assertj>3.18.1</version.assertj>
+        <version.mockito>3.6.28</version.mockito>
+        <!-- Liberty Runtime + H2 Database -->
+        <version.liberty.profile>20.0.0.10</version.liberty.profile>
+        <testServerHttpPort>9080</testServerHttpPort>
+        <version.h2>1.4.200</version.h2>
+    </properties>
+
+    <!-- Liberty Maven Configuration -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.ibm.websphere.appserver.features</groupId>
+                <artifactId>features-bom</artifactId>
+                <version>${version.liberty.profile}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${version.javaee-spec}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.openapi</groupId>
+            <artifactId>microprofile-openapi-api</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.health</groupId>
+            <artifactId>microprofile-health-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${version.assertj}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${version.mockito}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${version.mockito}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Tests von JAX-RS Resource, die Response.ok() u.a. Methoden aufruft -->
+        <!-- sonst ClassNotFoundException -->
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <version>${version.jersey}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${version.h2}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>todos-app</finalName>
+        <pluginManagement>
+            <plugins>
+                <!-- wenn, dann mit Version 3.2.0 und mit POM -->
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <!-- wenn, dann mit Version 3.2.0 -->
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <!-- Ausführung von Modul-/Integrationstests mit aktueller Version, die JUnit 5 unterstützt -->
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.3.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Liberty Profile Konfiguration -->
+                    <plugin>
+                        <groupId>io.openliberty.tools</groupId>
+                        <artifactId>liberty-maven-plugin</artifactId>
+                        <version>3.3.4</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <configFile>server.xml</configFile>
+                            <assemblyArtifact>
+                                <groupId>com.ibm.websphere.appserver.runtime</groupId>
+                                <artifactId>wlp-javaee8</artifactId>
+                                <version>${version.liberty.profile}</version>
+                                <type>zip</type>
+                            </assemblyArtifact>
+                            <bootstrapProperties>
+                                <http.port>${testServerHttpPort}</http.port>
+                            </bootstrapProperties>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-liberty</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>install-server</goal>
+                                    <goal>install-feature</goal>
+                                </goals>
+                                <configuration>
+                                    <features>
+                                        <acceptLicense>true</acceptLicense>
+                                    </features>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>package-app</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>package</goal>
+                                    <goal>deploy</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>target/wlp-package</outputDirectory>
+                                    <looseApplication>true</looseApplication>
+                                    <stripVersion>true</stripVersion>
+                                    <installAppPackages>project</installAppPackages>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- - - - - - - copy h2 to shared resources - - - -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <executions>
+                            <execution>
+                                <id>copy-h2-dependency</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeArtifactIds>h2</includeArtifactIds>
+                                    <outputDirectory>${project.build.directory}/liberty/wlp/usr/shared/resources/</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
